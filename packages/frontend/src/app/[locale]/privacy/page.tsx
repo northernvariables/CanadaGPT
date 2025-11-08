@@ -1,4 +1,4 @@
-// Privacy Policy Page
+// Privacy Policy Page - CanadaGPT
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
