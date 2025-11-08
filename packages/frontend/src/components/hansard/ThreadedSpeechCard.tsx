@@ -11,6 +11,8 @@ import { ChevronDown, ChevronUp, MessageSquare, User, Calendar, Hash } from 'luc
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { getBilingualContent } from '@/hooks/useBilingual';
+import { ShareButton } from '../ShareButton';
+import { PrintableCard } from '../PrintableCard';
 
 interface Statement {
   id: string;
@@ -141,9 +143,18 @@ const StatementCard = React.memo(function StatementCard({
         .replace(/_[a-zA-Z0-9]+(\.\w+)$/, '$1')
     : null;
 
+  // Share data
+  const shareUrl = `/${locale}/hansard#${statement.id}`;
+  const shareTitle = `${statement.madeBy?.name || bilingualStatement.who} - ${typeBadge.label}`;
+  const shareDescription = bilingualStatement.content
+    ? bilingualStatement.content.substring(0, 150) + (bilingualStatement.content.length > 150 ? '...' : '')
+    : '';
+
   return (
-    <article
+    <PrintableCard>
+      <article
       className={`
+        relative
         ${isReply ? 'ml-8 mt-3' : ''}
         ${colors.bg} ${colors.border} border-l-4 border
         rounded-lg p-4 shadow-sm
@@ -161,8 +172,18 @@ const StatementCard = React.memo(function StatementCard({
       role={onClick ? 'button' : undefined}
       aria-label={`${isReply ? 'Reply from' : 'Statement by'} ${bilingualStatement.who}, ${statement.wordcount} words`}
     >
+      {/* Share Button - Top Right */}
+      <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+        <ShareButton
+          url={shareUrl}
+          title={shareTitle}
+          description={shareDescription}
+          size="sm"
+        />
+      </div>
+
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      <div className="flex items-start justify-between gap-3 mb-3 pr-10">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Avatar */}
           {photoUrl ? (
@@ -233,7 +254,8 @@ const StatementCard = React.memo(function StatementCard({
           <p className="text-gray-500 dark:text-gray-400 italic">No content available</p>
         )}
       </div>
-    </article>
+      </article>
+    </PrintableCard>
   );
 });
 

@@ -4,15 +4,15 @@ Complete guide for enabling Google, GitHub, Facebook, and LinkedIn authenticatio
 
 ## Current Configuration
 
-- **Supabase Project**: `lbyqmjcqbwfeglfkiqpd`
+- **Supabase Project**: `pbxyhcdzdovsdlsyixsk`
 - **Production Domain**: `https://canadagpt.ca`
-- **Supabase OAuth Callback**: `https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback`
+- **Supabase OAuth Callback**: `https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback`
 
 ## Quick Reference
 
 All OAuth applications must use this redirect URL:
 ```
-https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
+https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback
 ```
 
 ---
@@ -52,7 +52,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
    ```
 4. **Authorized redirect URIs**:
    ```
-   https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
+   https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback
    ```
 5. Click **Create** and save:
    - Client ID: `[SAVE THIS]`
@@ -60,7 +60,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 
 ### Add to Supabase
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/lbyqmjcqbwfeglfkiqpd/auth/providers)
+1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/pbxyhcdzdovsdlsyixsk/auth/providers)
 2. Find **Google** → Toggle ON
 3. Paste credentials:
    - **Client ID**: Your Google Client ID
@@ -79,7 +79,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
    - **Application name**: CanadaGPT
    - **Homepage URL**: `https://canadagpt.ca`
    - **Application description**: Canadian Federal Parliamentary Data & AI Chat
-   - **Authorization callback URL**: `https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback`
+   - **Authorization callback URL**: `https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback`
 4. Click **Register application**
 
 ### Generate Credentials
@@ -91,7 +91,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 
 ### Add to Supabase
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/lbyqmjcqbwfeglfkiqpd/auth/providers)
+1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/pbxyhcdzdovsdlsyixsk/auth/providers)
 2. Find **GitHub** → Toggle ON
 3. Paste credentials:
    - **Client ID**: Your GitHub Client ID
@@ -120,7 +120,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 5. Navigate to **Facebook Login** → **Settings**
 6. Add to **Valid OAuth Redirect URIs**:
    ```
-   https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
+   https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback
    ```
 7. Save changes
 
@@ -133,7 +133,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 
 ### Add to Supabase
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/lbyqmjcqbwfeglfkiqpd/auth/providers)
+1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/pbxyhcdzdovsdlsyixsk/auth/providers)
 2. Find **Facebook** → Toggle ON
 3. Paste credentials:
    - **Facebook Client ID**: Your Facebook App ID
@@ -172,7 +172,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 1. Navigate to **Auth** tab
 2. Add to **Authorized redirect URLs for your app**:
    ```
-   https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
+   https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback
    ```
 3. Copy from **Application credentials**:
    - **Client ID**: `[SAVE THIS]`
@@ -180,7 +180,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 
 ### Add to Supabase
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/lbyqmjcqbwfeglfkiqpd/auth/providers)
+1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/pbxyhcdzdovsdlsyixsk/auth/providers)
 2. Find **LinkedIn (OIDC)** → Toggle ON
 3. Paste credentials:
    - **Client ID**: Your LinkedIn Client ID
@@ -204,7 +204,7 @@ Visit `http://localhost:3000/en/auth/login` and test each provider button.
 
 ### 2. Check Supabase Logs
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard/project/lbyqmjcqbwfeglfkiqpd/auth/logs)
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard/project/pbxyhcdzdovsdlsyixsk/auth/logs)
 2. Monitor authentication attempts
 3. Look for any errors or failed attempts
 
@@ -230,7 +230,7 @@ Once GitHub Actions deployment completes:
 
 **Fix**: Ensure this EXACT URL is configured in each provider:
 ```
-https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
+https://pbxyhcdzdovsdlsyixsk.supabase.co/auth/v1/callback
 ```
 
 ### "Invalid Client" Error
@@ -292,7 +292,7 @@ https://lbyqmjcqbwfeglfkiqpd.supabase.co/auth/v1/callback
 
 ### View current Supabase auth config
 ```bash
-supabase dashboard --project-ref lbyqmjcqbwfeglfkiqpd
+supabase dashboard --project-ref pbxyhcdzdovsdlsyixsk
 ```
 
 ### Test OAuth locally
@@ -322,5 +322,5 @@ curl https://canadagpt.ca/en/auth/login
 ---
 
 **Last Updated**: 2025-11-08
-**Supabase Project**: lbyqmjcqbwfeglfkiqpd
+**Supabase Project**: pbxyhcdzdovsdlsyixsk
 **Production URL**: https://canadagpt.ca

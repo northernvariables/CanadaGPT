@@ -14,10 +14,12 @@ import { Loading } from '@/components/Loading';
 import { Card } from '@canadagpt/design-system';
 import { SEARCH_BILLS } from '@/lib/queries';
 import { Link } from '@/i18n/navigation';
-import { Search, Filter, XCircle, Crown, FileText } from 'lucide-react';
+import { Search, Filter, XCircle, Crown, FileText, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { getBilingualContent } from '@/hooks/useBilingual';
+import { ShareButton } from '@/components/ShareButton';
+import { PrintableCard } from '@/components/PrintableCard';
 
 export default function BillsPage() {
   const t = useTranslations('bills');
@@ -33,6 +35,7 @@ export default function BillsPage() {
   const [royalAssentOnly, setRoyalAssentOnly] = useState<boolean>(false); // Default OFF
   const [orderPaperOnly, setOrderPaperOnly] = useState<boolean>(true); // Default ON - shows active bills
   const [failedLegislationOnly, setFailedLegislationOnly] = useState<boolean>(false); // Default OFF
+  const [privateMembersBillsOnly, setPrivateMembersBillsOnly] = useState<boolean>(false); // Default OFF
 
   // Handle order paper toggle
   const handleOrderPaperToggle = (checked: boolean) => {
@@ -239,6 +242,19 @@ export default function BillsPage() {
               <XCircle className="h-4 w-4" />
               {t('filters.failedLegislation')}
             </button>
+
+            {/* Private Members' Bills filter button */}
+            <button
+              onClick={() => setPrivateMembersBillsOnly(!privateMembersBillsOnly)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                privateMembersBillsOnly
+                  ? 'bg-green-600 text-white border-2 border-green-600'
+                  : 'bg-bg-secondary text-text-primary border-2 border-border-subtle hover:border-green-600'
+              }`}
+            >
+              <Users className="h-4 w-4" />
+              {t('filters.privateMembersBills')}
+            </button>
           </div>
         </div>
 
@@ -250,13 +266,19 @@ export default function BillsPage() {
             <p className="text-accent-red">{t('search.error')}</p>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div>
             {data?.searchBills
               ?.filter((bill: any) => bill.title || bill.title_fr) // Only show bills with titles (complete data)
               .filter((bill: any) => {
                 const status = (bill.status || '').toLowerCase();
                 const hasRoyalAssent = status.includes('royal assent');
                 const isCurrentSession = bill.session === CURRENT_SESSION;
+                const isPrivateMembersBill = bill.bill_type === "Private Member's Bill";
+
+                // Private Members' Bills toggle: if ON, only show private members' bills
+                if (privateMembersBillsOnly && !isPrivateMembersBill) {
+                  return false;
+                }
 
                 // Royal Assent toggle: if ON, ALWAYS include royal assent bills (additive)
                 if (royalAssentOnly && hasRoyalAssent) {
@@ -283,13 +305,33 @@ export default function BillsPage() {
               })
               .map((bill: any, index: number) => {
                 const bilingualBill = getBilingualContent(bill, locale);
+
+                // Share data
+                const shareUrl = `/${locale}/bills/${bill.session}/${bill.number}`;
+                const shareTitle = `${t('card.billLabel')} ${bill.number} - ${bilingualBill.title}`;
+                const shareDescription = bilingualBill.summary
+                  ? bilingualBill.summary.replace(/<[^>]*>/g, '').substring(0, 150) + (bilingualBill.summary.length > 150 ? '...' : '')
+                  : bilingualBill.title;
+
                 return (
               <Link
                 key={`${bill.session}-${bill.number}-${index}`}
                 href={`/bills/${bill.session}/${bill.number}` as any}
+                className="block mb-8"
               >
-                <Card className="hover:border-accent-red transition-colors cursor-pointer">
-                  <div className="flex items-start justify-between">
+                <PrintableCard>
+                  <Card className="hover:border-accent-red transition-colors cursor-pointer relative">
+                    {/* Share Button - Top Right */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <ShareButton
+                        url={shareUrl}
+                        title={shareTitle}
+                        description={shareDescription}
+                        size="sm"
+                      />
+                    </div>
+
+                    <div className="flex items-start justify-between pr-8">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <h3 className="text-xl font-semibold text-text-primary">
@@ -348,8 +390,9 @@ export default function BillsPage() {
                         )}
                       </div>
                     </div>
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
+                </PrintableCard>
               </Link>
               );
             })}

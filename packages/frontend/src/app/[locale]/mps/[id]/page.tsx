@@ -6,6 +6,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
+import { useLocale } from 'next-intl';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Loading } from '@/components/Loading';
@@ -21,9 +22,11 @@ import { Mail, Phone, Twitter, MapPin, Award, FileText, TrendingUp, ExternalLink
 import { PartyLogo } from '@/components/PartyLogo';
 import { usePageThreading } from '@/contexts/UserPreferencesContext';
 import { ThreadToggle, ConversationThread } from '@/components/hansard';
+import { ShareButton } from '@/components/ShareButton';
 
 export default function MPDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const locale = useLocale();
 
   const { data, loading, error } = useQuery(GET_MP, {
     variables: { id },
@@ -91,8 +94,18 @@ export default function MPDetailPage({ params }: { params: Promise<{ id: string 
 
       <main className="flex-1 page-container">
         {/* MP Header */}
-        <div className="mb-8">
-          <div className="flex items-start space-x-6">
+        <div className="mb-8 relative">
+          {/* Share Button - Top Right */}
+          <div className="absolute top-0 right-0">
+            <ShareButton
+              url={`/${locale}/mps/${id}`}
+              title={mp.name}
+              description={`${mp.memberOf?.name || mp.party} - ${mp.represents?.name || mp.riding}`}
+              size="md"
+            />
+          </div>
+
+          <div className="flex items-start space-x-6 pr-12">
             {photoUrl && (
               <img
                 src={photoUrl}

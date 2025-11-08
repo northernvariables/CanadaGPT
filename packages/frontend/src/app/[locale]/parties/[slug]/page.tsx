@@ -12,6 +12,7 @@
 
 import { use } from 'react';
 import { useQuery } from '@apollo/client';
+import { useLocale } from 'next-intl';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Loading } from '@/components/Loading';
@@ -20,6 +21,7 @@ import { StatCard } from '@/components/dashboard/StatCard';
 import { SEARCH_MPS } from '@/lib/queries';
 import { getPartyInfo, getPartySlug } from '@/lib/partyConstants';
 import { MPCard } from '@/components/MPCard';
+import { ShareButton } from '@/components/ShareButton';
 import { Users, Crown, MapPin } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
@@ -31,6 +33,7 @@ interface PartyPageProps {
 
 export default function PartyPage(props: PartyPageProps) {
   const params = use(props.params);
+  const locale = useLocale();
 
   // Find party by slug
   const partyInfo = Object.values(getPartyInfo('')?.constructor.prototype || {})
@@ -77,13 +80,23 @@ export default function PartyPage(props: PartyPageProps) {
       <main className="flex-1 page-container">
         {/* Party Header */}
         <div
-          className="rounded-lg p-8 mb-8 -mt-4"
+          className="rounded-lg p-8 mb-8 -mt-4 relative"
           style={{
             backgroundColor: targetPartyInfo.color,
             color: targetPartyInfo.textColor,
           }}
         >
-          <div className="flex items-start justify-between">
+          {/* Share Button - Top Right */}
+          <div className="absolute top-4 right-4">
+            <ShareButton
+              url={`/${locale}/parties/${params.slug}`}
+              title={targetPartyInfo.fullName}
+              description={`${mps.length} ${mps.length === 1 ? 'seat' : 'seats'} • ${seatPercentage}% of Parliament`}
+              size="md"
+            />
+          </div>
+
+          <div className="flex items-start justify-between pr-12">
             <div className="flex items-center gap-4">
               {/* Party Logo Badge */}
               <div

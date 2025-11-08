@@ -6,6 +6,7 @@
 
 import { use } from 'react';
 import { useQuery } from '@apollo/client';
+import { useLocale } from 'next-intl';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Loading } from '@/components/Loading';
@@ -14,9 +15,11 @@ import { GET_COMMITTEE } from '@/lib/queries';
 import Link from 'next/link';
 import { Users, FileText, Building2 } from 'lucide-react';
 import { PartyLogo } from '@/components/PartyLogo';
+import { ShareButton } from '@/components/ShareButton';
 
 export default function CommitteeDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = use(params);
+  const locale = useLocale();
 
   const { data, loading, error } = useQuery(GET_COMMITTEE, {
     variables: { code },
@@ -54,25 +57,37 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ code
 
       <main className="flex-1 page-container">
         {/* Committee Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-2">
-            <h1 className="text-4xl font-bold text-text-primary">{committee.name}</h1>
-            <span className={`text-sm px-3 py-1 rounded ${
-              committee.chamber === 'House'
-                ? 'bg-green-500/20 text-green-400'
-                : 'bg-red-500/20 text-red-400'
-            }`}>
-              {committee.chamber}
-            </span>
+        <div className="mb-8 relative">
+          {/* Share Button - Top Right */}
+          <div className="absolute top-0 right-0">
+            <ShareButton
+              url={`/${locale}/committees/${committee.code}`}
+              title={`${committee.name} - ${committee.code}`}
+              description={committee.mandate || `${committee.chamber} Committee`}
+              size="md"
+            />
           </div>
-          <p className="text-lg text-text-secondary mb-2">
-            Code: {committee.code}
-          </p>
-          {committee.mandate && (
-            <p className="text-base text-text-secondary mt-4 max-w-4xl">
-              {committee.mandate}
+
+          <div className="pr-12">
+            <div className="flex items-center gap-2 mb-2">
+              <h1 className="text-4xl font-bold text-text-primary">{committee.name}</h1>
+              <span className={`text-sm px-3 py-1 rounded ${
+                committee.chamber === 'House'
+                  ? 'bg-green-500/20 text-green-400'
+                  : 'bg-red-500/20 text-red-400'
+              }`}>
+                {committee.chamber}
+              </span>
+            </div>
+            <p className="text-lg text-text-secondary mb-2">
+              Code: {committee.code}
             </p>
-          )}
+            {committee.mandate && (
+              <p className="text-base text-text-secondary mt-4 max-w-4xl">
+                {committee.mandate}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Committee Members - Org Chart Style */}

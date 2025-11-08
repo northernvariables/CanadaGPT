@@ -21,6 +21,7 @@ import { BillDiscussions } from '@/components/forum';
 import { useBilingualContent } from '@/hooks/useBilingual';
 import { usePageThreading } from '@/contexts/UserPreferencesContext';
 import { ThreadToggle, ConversationThread } from '@/components/hansard';
+import { ShareButton } from '@/components/ShareButton';
 
 export default function BillDetailPage({
   params,
@@ -92,8 +93,18 @@ export default function BillDetailPage({
 
       <main className="flex-1 page-container">
         {/* Bill Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <div className="mb-8 relative">
+          {/* Share Button - Top Right */}
+          <div className="absolute top-0 right-0">
+            <ShareButton
+              url={`/${locale}/bills/${bill.session}/${bill.number}`}
+              title={`${t('billNumber')} ${bill.number} - ${bilingualBill.title}`}
+              description={bilingualBill.summary || bilingualBill.title}
+              size="md"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 mb-3 flex-wrap pr-12">
             <h1 className="text-4xl font-bold text-text-primary">{t('billNumber')} {bill.number}</h1>
             <span className="text-sm text-text-tertiary">{t('session')} {bill.session}</span>
             {bilingualBill.bill_type && (

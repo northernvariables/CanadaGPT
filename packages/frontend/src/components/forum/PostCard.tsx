@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { MessageSquare, Flag, Edit, Trash2, Lock, Pin } from 'lucide-react';
 import { VoteButtons } from './VoteButtons';
 import type { ForumPost } from '@/types/forum';
 import { useAuth } from '@/contexts/AuthContext';
+import { ShareButton } from '../ShareButton';
+import { PrintableCard } from '../PrintableCard';
 
 interface PostCardProps {
   post: ForumPost;
@@ -30,6 +33,7 @@ export function PostCard({
   variant = 'full',
 }: PostCardProps) {
   const { user } = useAuth();
+  const locale = useLocale();
   const [isExpanded, setIsExpanded] = useState(variant === 'full');
   const [localUpvotes, setLocalUpvotes] = useState(post.upvotes_count);
   const [localDownvotes, setLocalDownvotes] = useState(post.downvotes_count);
@@ -68,8 +72,18 @@ export function PostCard({
 
   const needsTruncation = variant === 'compact' && post.content.length > 300;
 
+  // Share data
+  const shareUrl = post.bill_number
+    ? `/${locale}/bills/${post.bill_number}#post-${post.id}`
+    : `/${locale}/forum#post-${post.id}`;
+  const shareTitle = post.title || `${post.author?.display_name || 'Anonymous'}'s post`;
+  const shareDescription = post.content
+    .replace(/[#*_~`>\[\]]/g, '') // Remove basic markdown
+    .substring(0, 150) + (post.content.length > 150 ? '...' : '');
+
   return (
-    <div
+    <PrintableCard>
+      <div
       className={`
         bg-background-secondary rounded-lg border-2 border-border-primary
         ${post.is_pinned ? 'border-accent-red' : ''}
@@ -93,8 +107,18 @@ export function PostCard({
         {/* Content column */}
         <div className="flex-1 min-w-0">
           {/* Header */}
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2 mb-2 relative">
+            {/* Share Button - Top Right */}
+            <div className="absolute top-0 right-0">
+              <ShareButton
+                url={shareUrl}
+                title={shareTitle}
+                description={shareDescription}
+                size="sm"
+              />
+            </div>
+
+            <div className="flex-1 min-w-0 pr-8">
               {/* Title */}
               {post.title && (
                 <h3 className="text-lg font-semibold text-text-primary mb-1 flex items-center gap-2">
@@ -223,6 +247,7 @@ export function PostCard({
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </PrintableCard>
   );
 }
