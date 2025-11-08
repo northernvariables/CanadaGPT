@@ -4,6 +4,7 @@
 
 'use client';
 
+import Image from 'next/image';
 import { Newspaper, ExternalLink, Calendar } from 'lucide-react';
 import { MapleLeafIcon } from '@canadagpt/design-system';
 
@@ -75,9 +76,11 @@ export function NewsArticles({ articles, loading }: NewsArticlesProps) {
             {/* Article Image */}
             {article.image_url ? (
               <div className="flex-shrink-0 w-48 h-32 bg-bg-secondary relative overflow-hidden">
-                <img
+                <Image
                   src={article.image_url}
                   alt={article.title}
+                  width={192}
+                  height={128}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   onError={(e) => {
                     // Hide image if it fails to load
