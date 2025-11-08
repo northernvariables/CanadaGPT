@@ -13,6 +13,7 @@
 
 'use client';
 
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@canadagpt/design-system';
@@ -82,9 +83,11 @@ export function MPCard({ mp, linkToParty = true, className = '' }: MPCardProps) 
         <div className="flex items-start space-x-4">
           {/* MP Photo */}
           {photoUrl && (
-            <img
+            <Image
               src={photoUrl}
               alt={mp.name}
+              width={60}
+              height={96}
               className="w-[60px] h-24 rounded-lg object-contain flex-shrink-0 bg-bg-elevated"
             />
           )}
@@ -152,9 +155,11 @@ export function CompactMPCard({ mp, linkToParty = true, className = '' }: Compac
 
         {/* MP Photo */}
         {photoUrl && (
-          <img
+          <Image
             src={photoUrl}
             alt={mp.name}
+            width={300}
+            height={384}
             className="w-full h-96 object-cover object-[50%_25%] rounded-md mb-2"
           />
         )}
