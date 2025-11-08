@@ -16,7 +16,7 @@ export default function AboutPage() {
       <main className="flex-1 page-container max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <MapleLeafIcon size="lg" className="h-16 w-16 text-accent-red mx-auto mb-4" />
+          <MapleLeafIcon size={64} className="h-16 w-16 text-accent-red mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-text-primary mb-4">About CanadaGPT</h1>
           <p className="text-xl text-text-secondary max-w-2xl mx-auto">
             Making Canadian government data accessible, transparent, and accountable through modern technology.
