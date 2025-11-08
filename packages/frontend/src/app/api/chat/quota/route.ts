@@ -11,18 +11,21 @@
 import { createClient } from '@supabase/supabase-js';
 import type { QuotaCheckResult } from '@/lib/types/chat';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-);
+  );
+}
 
 export async function GET(request: Request) {
+  const supabase = getSupabaseClient();
   try {
     // Get user from Supabase auth
     const authHeader = request.headers.get('authorization');

@@ -17,16 +17,18 @@ import crypto from 'crypto';
 import type { ContextType } from '@/lib/types/chat';
 
 // Initialize Supabase with service role for admin operations
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-);
+  );
+}
 
 // AI Provider clients (server-side)
 const anthropic = new Anthropic({
@@ -159,6 +161,7 @@ function calculateCost(
 }
 
 export async function POST(request: Request) {
+  const supabase = getSupabaseClient();
   try {
     const body = await request.json();
     const { conversation_id, message, context } = body;
