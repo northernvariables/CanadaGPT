@@ -15,6 +15,7 @@ import { ApolloWrapper } from '@/components/ApolloWrapper';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { UserPreferencesProvider } from '@/contexts/UserPreferencesContext';
 import { ChatWidget } from '@/components/chat';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { locales } from '@/i18n/config';
 import '../globals.css';
 
@@ -94,16 +95,18 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} className="h-full">
       <body className={`${inter.className} h-full`}>
-        <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
-            <UserPreferencesProvider>
-              <ApolloWrapper>
-                {children}
-                <ChatWidget />
-              </ApolloWrapper>
-            </UserPreferencesProvider>
-          </AuthProvider>
-        </NextIntlClientProvider>
+        <ErrorBoundary>
+          <NextIntlClientProvider messages={messages}>
+            <AuthProvider>
+              <UserPreferencesProvider>
+                <ApolloWrapper>
+                  {children}
+                  <ChatWidget />
+                </ApolloWrapper>
+              </UserPreferencesProvider>
+            </AuthProvider>
+          </NextIntlClientProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
