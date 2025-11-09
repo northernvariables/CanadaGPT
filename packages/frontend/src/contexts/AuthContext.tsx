@@ -18,6 +18,8 @@ interface UserProfile {
   avatar_url?: string | null;
   subscription_tier?: string;
   monthly_usage?: number;
+  created_at?: string;
+  usage_reset_date?: string;
 }
 
 interface AuthContextType {
@@ -45,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         avatar_url: session.user.image,
         subscription_tier: session.user.subscriptionTier,
         monthly_usage: session.user.monthlyUsage,
+        created_at: session.user.createdAt,
+        usage_reset_date: session.user.usageResetDate,
       }
     : null;
 

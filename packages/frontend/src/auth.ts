@@ -138,16 +138,18 @@ export const {auth, handlers, signIn, signOut } = NextAuth({
 
         token.id = userId;
 
-        // Store subscription info in token
+        // Store subscription info and dates in token
         const { data: profile } = await supabaseAdmin
           .from('user_profiles')
-          .select('subscription_tier, monthly_usage')
+          .select('subscription_tier, monthly_usage, created_at, usage_reset_date')
           .eq('id', userId)
           .single();
 
         if (profile) {
           token.subscriptionTier = profile.subscription_tier;
           token.monthlyUsage = profile.monthly_usage;
+          token.createdAt = profile.created_at;
+          token.usageResetDate = profile.usage_reset_date;
         }
 
         // If this is an OAuth sign in, store the account
@@ -204,6 +206,8 @@ export const {auth, handlers, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
         session.user.subscriptionTier = token.subscriptionTier as string;
         session.user.monthlyUsage = token.monthlyUsage as number;
+        session.user.createdAt = token.createdAt as string;
+        session.user.usageResetDate = token.usageResetDate as string;
         session.user.linkedProviders = token.linkedProviders as string[];
       }
       return session;

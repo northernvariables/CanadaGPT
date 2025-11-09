@@ -18,6 +18,24 @@ import { signIn } from 'next-auth/react';
 
 type SettingsSection = 'profile' | 'account' | 'preferences' | 'usage' | 'subscription' | 'connected';
 
+// Helper function to safely format dates
+function formatDate(dateString: string | undefined, options?: Intl.DateTimeFormatOptions): string {
+  if (!dateString) return 'Not available';
+
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Not available';
+
+    return date.toLocaleDateString('en-US', options || {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (error) {
+    return 'Not available';
+  }
+}
+
 export default function SettingsPage() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const { preferences, updatePreferences, loading: preferencesLoading } = useUserPreferences();
@@ -252,11 +270,7 @@ export default function SettingsPage() {
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Member Since</dt>
                     <dd className="mt-1 text-sm text-gray-900">
-                      {new Date(profile.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {formatDate(profile.created_at)}
                     </dd>
                   </div>
                 </dl>
@@ -445,7 +459,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Resets on {new Date(profile.usage_reset_date).toLocaleDateString()}
+                    Resets on {formatDate(profile.usage_reset_date)}
                   </p>
                 </div>
 
@@ -496,7 +510,7 @@ export default function SettingsPage() {
                     {profile.monthly_usage || 0} / {limit} queries used
                   </p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Resets on {new Date(profile.usage_reset_date).toLocaleDateString()}
+                    Resets on {formatDate(profile.usage_reset_date)}
                   </p>
                 </div>
 
