@@ -403,7 +403,7 @@ export default function SettingsPage() {
                       value={preferences.language}
                       onChange={(e) => handleLanguageChange(e.target.value as 'en' | 'fr')}
                       disabled={preferencesLoading}
-                      className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                      className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="en">English</option>
                       <option value="fr">Français</option>
