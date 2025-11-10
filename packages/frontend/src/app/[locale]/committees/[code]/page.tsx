@@ -118,7 +118,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ code
               content: (
                 <>
                   {/* Activity Metrics Dashboard */}
-                  {metrics && !metricsLoading && (
+                  {metrics && (
                     <Card className="mb-6">
                       <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center">
                         <TrendingUp className="h-6 w-6 mr-2 text-accent-red" />
