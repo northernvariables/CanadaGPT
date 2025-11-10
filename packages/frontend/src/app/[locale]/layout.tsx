@@ -18,6 +18,8 @@ import { UserPreferencesProvider } from '@/contexts/UserPreferencesContext';
 import { ChatWidgetWrapper } from '@/components/chat';
 import { ContentWrapper } from '@/components/ContentWrapper';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { GoogleTagManager, GoogleTagManagerNoScript } from '@/components/GoogleTagManager';
+import { StructuredData } from '@/components/StructuredData';
 import { locales } from '@/i18n/config';
 import '../globals.css';
 
@@ -37,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://canadagpt.ca';
+  const ogImageUrl = `${baseUrl}/og-image.png`;
 
   return {
     title: {
@@ -45,6 +48,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     description: t('description'),
     keywords: t('keywords'),
+    authors: [{ name: 'CanadaGPT Team' }],
+    creator: 'CanadaGPT',
+    publisher: 'CanadaGPT',
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: `/${locale}`,
@@ -60,11 +71,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: 'CanadaGPT',
       locale: locale === 'fr' ? 'fr_CA' : 'en_CA',
       type: 'website',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: t('title'),
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: t('title'),
       description: t('description'),
+      images: [ogImageUrl],
+      creator: '@CanadaGPT',
+      site: '@CanadaGPT',
     },
     robots: {
       index: true,
@@ -77,6 +99,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         'max-snippet': -1,
       },
     },
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    },
+    category: 'Government & Politics',
   };
 }
 
@@ -96,7 +122,12 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} className="h-full">
+      <head>
+        <GoogleTagManager />
+        <StructuredData locale={locale} />
+      </head>
       <body className={`${inter.className} h-full`}>
+        <GoogleTagManagerNoScript />
         <ErrorBoundary>
           <NextIntlClientProvider messages={messages}>
             <SessionProvider>
