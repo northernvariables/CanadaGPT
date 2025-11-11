@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     // Get bookmark count for each collection
     const collectionsWithCounts = await Promise.all(
-      (collections || []).map(async (collection) => {
+      (collections || []).map(async (collection: any) => {
         const { count } = await supabase
           .from('bookmarks')
           .select('*', { count: 'exact', head: true })
