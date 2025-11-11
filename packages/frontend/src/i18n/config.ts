@@ -11,6 +11,7 @@ export const pathnames = {
   '/dashboard': '/dashboard',
   '/mps': '/mps',
   '/bills': '/bills',
+  '/debates': '/debates',
   '/hansard': '/hansard',
   '/chamber': '/chamber',
   '/committees': '/committees',
