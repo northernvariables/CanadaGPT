@@ -13,7 +13,7 @@ import { Footer } from '@/components/Footer';
 import { Loading } from '@/components/Loading';
 import { Card } from '@canadagpt/design-system';
 import { StatCard } from '@/components/dashboard/StatCard';
-import { GET_TOP_SPENDERS, SEARCH_MPS, SEARCH_BILLS, SEARCH_HANSARD, GET_DASHBOARD_COUNTS, GET_RANDOM_MPS, GET_DASHBOARD_LOBBYING } from '@/lib/queries';
+import { GET_TOP_SPENDERS, SEARCH_MPS, SEARCH_BILLS, GET_RECENT_STATEMENTS, GET_DASHBOARD_COUNTS, GET_RANDOM_MPS, GET_DASHBOARD_LOBBYING } from '@/lib/queries';
 import { Link } from '@/i18n/navigation';
 import { formatCAD } from '@canadagpt/design-system';
 import { Users, FileText, Megaphone, DollarSign, TrendingUp, MessageSquare, Info, Building } from 'lucide-react';
@@ -38,8 +38,12 @@ export default function DashboardPage() {
     variables: { fiscalYear, limit: 10 },
   });
 
-  const { data: hansardData, loading: hansardLoading } = useQuery(SEARCH_HANSARD, {
-    variables: { query: "government", limit: 10 },
+  // Get recent statements (last 30 days) for the metric and tile
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const { data: recentStatementsData, loading: statementsLoading } = useQuery(GET_RECENT_STATEMENTS, {
+    variables: { limit: 100 }, // Fetch enough to filter by date
   });
 
   const { data: lobbyingData, loading: lobbyingLoading } = useQuery(GET_DASHBOARD_LOBBYING);
@@ -65,6 +69,15 @@ export default function DashboardPage() {
   const activeBills = activeBillsData?.searchBills?.filter(
     (b: any) => b.title && !['Passed', 'Royal Assent'].includes(b.status)
   )?.length || 0;
+
+  // Filter speeches from the last 30 days
+  const recentSpeeches = recentStatementsData?.statements?.filter((statement: any) => {
+    if (!statement.partOf?.date) return false;
+    const statementDate = new Date(statement.partOf.date);
+    return statementDate >= thirtyDaysAgo;
+  }) || [];
+
+  const recentSpeechCount = recentSpeeches.length;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -100,9 +113,9 @@ export default function DashboardPage() {
           />
           <StatCard
             title={t('metrics.recentSpeeches')}
-            value={hansardData?.searchHansard?.length || 0}
+            value={recentSpeechCount}
             icon={MessageSquare}
-            subtitle={t('metrics.hansardRecords')}
+            subtitle={t('metrics.last30Days')}
             href="/hansard"
           />
         </div>
@@ -245,11 +258,11 @@ export default function DashboardPage() {
               <MessageSquare className="h-6 w-6 text-accent-red" />
             </div>
 
-            {hansardLoading ? (
+            {statementsLoading ? (
               <Loading />
             ) : (
               <div className="space-y-3">
-                {hansardData?.searchHansard?.slice(0, 5).map((speech: any) => {
+                {recentSpeeches.slice(0, 5).map((speech: any) => {
                   const bilingualSpeech = getBilingualContent(speech, locale);
                   return (
                     <div

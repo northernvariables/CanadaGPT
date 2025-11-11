@@ -5,6 +5,7 @@
 import { createYoga } from 'graphql-yoga';
 import { Neo4jGraphQL } from '@neo4j/graphql';
 import { createServer } from 'http';
+import neo4j from 'neo4j-driver';
 import { typeDefs } from './schema.js';
 import { getDriver } from './neo4j.js';
 import { config } from './config.js';
@@ -43,6 +44,9 @@ export function createGraphQLSchema() {
           // Execute the Cypher query directly
           const session = driver.session();
           try {
+            // Convert to Neo4j integer type to ensure proper type handling
+            const limit = neo4j.int(Math.floor(args.limit || 12));
+
             const result = await session.run(
               `
               MATCH (mp:MP)
@@ -53,7 +57,7 @@ export function createGraphQLSchema() {
               LIMIT $limit
               RETURN mp
               `,
-              { limit: args.limit || 12, parties: args.parties || null }
+              { limit, parties: args.parties || null }
             );
 
             const mps = result.records.map(record => record.get('mp').properties);
@@ -79,6 +83,10 @@ export function createGraphQLSchema() {
           // Execute the Cypher query directly
           const session = driver.session();
           try {
+            // Convert to Neo4j integer type to ensure proper type handling
+            const limit = neo4j.int(Math.floor(args.limit || 10));
+            const fiscalYear = args.fiscalYear ? neo4j.int(Math.floor(args.fiscalYear)) : null;
+
             const result = await session.run(
               `
               MATCH (mp:MP)-[:INCURRED]->(e:Expense)
@@ -102,7 +110,7 @@ export function createGraphQLSchema() {
               ORDER BY total_expenses DESC
               LIMIT $limit
               `,
-              { fiscalYear: args.fiscalYear || null, limit: args.limit || 10 }
+              { fiscalYear, limit }
             );
 
             const summaries = result.records.map(record => record.get('summary'));

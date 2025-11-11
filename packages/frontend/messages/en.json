@@ -500,7 +500,7 @@
       "topSpender": "Top Spender",
       "expenses": "{year} expenses",
       "recentSpeeches": "Recent Speeches",
-      "hansardRecords": "Hansard records"
+      "last30Days": "Last 30 days"
     },
     "quickActions": {
       "browseMPs": "Browse MPs",

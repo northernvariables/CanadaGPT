@@ -499,7 +499,7 @@
       "topSpender": "Plus gros dépensier",
       "expenses": "Dépenses {year}",
       "recentSpeeches": "Discours récents",
-      "hansardRecords": "Archives Hansard"
+      "last30Days": "30 derniers jours"
     },
     "quickActions": {
       "browseMPs": "Parcourir les députés",

@@ -30,8 +30,10 @@ RUN pnpm build
 FROM builder AS test
 
 # Set test environment variables for config validation
-ENV NEO4J_URI=bolt://localhost:7687 \
-    NEO4J_PASSWORD=test \
+# Note: These are dummy values for build-time validation only
+# Actual production values are injected by Cloud Run at runtime
+ENV NEO4J_URI=bolt://10.128.0.3:7687 \
+    NEO4J_PASSWORD=build-test-dummy \
     CORS_ORIGINS=https://canadagpt.ca;http://localhost:3000
 
 # Test that config loads without errors

@@ -818,32 +818,8 @@ export const typeDefs = `#graphql
       )
 
     # Top Spenders (MPs by expenses)
+    # Custom resolver in server.ts handles this query with proper integer conversion
     topSpenders(fiscalYear: Int, limit: Int = 10): [MPExpenseSummary!]!
-      @cypher(
-        statement: """
-        MATCH (mp:MP)-[:INCURRED]->(e:Expense)
-        WHERE $fiscalYear IS NULL OR e.fiscal_year = $fiscalYear
-        WITH mp, sum(e.amount) AS total_expenses
-        RETURN {
-          mp: {
-            id: mp.id,
-            name: mp.name,
-            given_name: mp.given_name,
-            family_name: mp.family_name,
-            party: mp.party,
-            riding: mp.riding,
-            current: mp.current,
-            email: mp.email,
-            phone: mp.phone,
-            updated_at: mp.updated_at
-          },
-          total_expenses: total_expenses
-        } AS summary
-        ORDER BY total_expenses DESC
-        LIMIT $limit
-        """
-        columnName: "summary"
-      )
 
     # Party Spending Trends (quarterly spending by party)
     partySpendingTrends(fiscalYear: Int): [PartySpendingTrend!]!
