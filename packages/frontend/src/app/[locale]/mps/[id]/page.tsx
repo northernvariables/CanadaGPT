@@ -311,8 +311,8 @@ export default function MPDetailPage({ params }: { params: Promise<{ id: string 
                   // Split by double line breaks to detect multiple offices
                   const offices = mp.constituency_office
                     .split(/\n\n+/)
-                    .map(office => office.trim())
-                    .filter(office => office.length > 0);
+                    .map((office: string) => office.trim())
+                    .filter((office: string) => office.length > 0);
 
                   // Parse office text to extract and format phone numbers
                   const parseOffice = (officeText: string) => {

@@ -582,6 +582,25 @@ export const typeDefs = `#graphql
     current_year_expenses: Float!
     lobbyist_meetings: Int!
     question_period_interjections: Int!
+
+    # Calculated performance metrics
+    voting_participation_rate: Float  # Percentage of votes participated in (0-100)
+    party_discipline_score: Float  # Percentage of votes aligned with party (0-100)
+    legislative_success_rate: Float  # Percentage of bills passed (0-100)
+    committee_activity_index: Float  # Weighted committee participation score
+  }
+
+  type MPAverages {
+    party_code: String!
+    party_name: String!
+    avg_voting_participation_rate: Float
+    avg_party_discipline_score: Float
+    avg_legislative_success_rate: Float
+    avg_committee_activity_index: Float
+    avg_bills_sponsored: Float
+    avg_bills_passed: Float
+    avg_current_year_expenses: Float
+    mp_count: Int!
   }
 
   type MPExpenseSummary {
@@ -705,6 +724,53 @@ export const typeDefs = `#graphql
           WHERE statement.h1_en CONTAINS 'Oral Question'
           RETURN count(DISTINCT statement) AS question_period_interjections
         }
+
+        // Calculate voting participation rate (% of all votes participated in)
+        CALL {
+          WITH votes_participated
+          MATCH (v:Vote)
+          WITH votes_participated, count(DISTINCT v) AS total_votes
+          RETURN CASE WHEN total_votes > 0
+                 THEN (toFloat(votes_participated) / toFloat(total_votes)) * 100.0
+                 ELSE 0.0 END AS voting_participation_rate
+        }
+
+        // Calculate party discipline score (% of votes aligned with party majority)
+        CALL {
+          WITH mp
+          OPTIONAL MATCH (mp)-[voted:VOTED]->(vote:Vote)
+          WITH mp, voted, vote
+          OPTIONAL MATCH (vote)<-[party_votes:VOTED]-(party_mp:MP)-[:MEMBER_OF]->(mp_party:Party)
+          WHERE mp_party.code = mp.party
+          WITH mp, vote, voted,
+               count(DISTINCT CASE WHEN party_votes.position = voted.position THEN party_mp END) AS same_position_count,
+               count(DISTINCT party_mp) AS total_party_votes
+          WITH mp,
+               count(DISTINCT vote) AS total_mp_votes,
+               count(DISTINCT CASE WHEN toFloat(same_position_count) / toFloat(total_party_votes) > 0.5 THEN vote END) AS aligned_votes
+          RETURN CASE WHEN total_mp_votes > 0
+                 THEN (toFloat(aligned_votes) / toFloat(total_mp_votes)) * 100.0
+                 ELSE 0.0 END AS party_discipline_score
+        }
+
+        // Calculate legislative success rate (% of bills that passed)
+        CALL {
+          WITH bills_sponsored, bills_passed
+          RETURN CASE WHEN bills_sponsored > 0
+                 THEN (toFloat(bills_passed) / toFloat(bills_sponsored)) * 100.0
+                 ELSE 0.0 END AS legislative_success_rate
+        }
+
+        // Calculate committee activity index (weighted score)
+        CALL {
+          WITH mp
+          OPTIONAL MATCH (mp)-[:SERVES_ON]->(committee:Committee)
+          OPTIONAL MATCH (mp)<-[:MADE_BY]-(s:Statement)-[:PART_OF]->(d:Document {document_type: 'E'})
+          WITH mp, count(DISTINCT committee) AS committee_memberships, count(DISTINCT s) AS committee_statements
+          // Weight: 1 point per membership + 0.1 points per statement
+          RETURN (toFloat(committee_memberships) + toFloat(committee_statements) * 0.1) AS committee_activity_index
+        }
+
         RETURN {
           mp: {
             id: mp.id,
@@ -721,7 +787,11 @@ export const typeDefs = `#graphql
           total_petition_signatures: COALESCE(total_petition_signatures, 0),
           current_year_expenses: COALESCE(current_year_expenses, 0.0),
           lobbyist_meetings: lobbyist_meetings,
-          question_period_interjections: question_period_interjections
+          question_period_interjections: question_period_interjections,
+          voting_participation_rate: voting_participation_rate,
+          party_discipline_score: party_discipline_score,
+          legislative_success_rate: legislative_success_rate,
+          committee_activity_index: committee_activity_index
         } AS scorecard
         """
         columnName: "scorecard"
@@ -1273,6 +1343,96 @@ export const typeDefs = `#graphql
         }
         """
         columnName: "committeeActivityMetrics"
+      )
+
+    # Party performance averages for comparison
+    mpPartyAverages(partyCode: String!): MPAverages
+      @cypher(
+        statement: """
+        MATCH (party:Party {code: $partyCode})<-[:MEMBER_OF]-(mp:MP)
+        WHERE mp.current = true
+
+        WITH party, mp,
+          CASE
+            WHEN date().month < 4 THEN date().year
+            ELSE date().year + 1
+          END AS current_fiscal_year
+
+        // Calculate total votes in the system for participation rate
+        CALL {
+          MATCH (v:Vote)
+          RETURN count(DISTINCT v) AS total_votes
+        }
+
+        // For each MP, calculate their metrics
+        CALL {
+          WITH mp, current_fiscal_year
+          OPTIONAL MATCH (mp)-[:SPONSORED]->(bill:Bill)
+          RETURN count(DISTINCT bill) AS mp_bills_sponsored,
+                 count(DISTINCT CASE WHEN bill.status = 'Passed' THEN bill END) AS mp_bills_passed
+        }
+
+        CALL {
+          WITH mp
+          OPTIONAL MATCH (mp)-[voted:VOTED]->(vote:Vote)
+          WITH mp, voted, vote, count(DISTINCT vote) AS mp_votes_participated
+          // Calculate party alignment (votes where MP voted same as majority of their party)
+          OPTIONAL MATCH (vote)<-[party_votes:VOTED]-(party_mp:MP)-[:MEMBER_OF]->(mp_party:Party)
+          WHERE mp_party.code = mp.party
+          WITH mp, vote, voted, mp_votes_participated,
+               count(DISTINCT CASE WHEN party_votes.position = voted.position THEN party_mp END) AS same_position_count,
+               count(DISTINCT party_mp) AS total_party_votes
+          WITH mp, mp_votes_participated,
+               count(DISTINCT CASE WHEN toFloat(same_position_count) / toFloat(total_party_votes) > 0.5 THEN vote END) AS aligned_votes
+          RETURN mp_votes_participated, aligned_votes
+        }
+
+        CALL {
+          WITH mp, current_fiscal_year
+          OPTIONAL MATCH (mp)-[:INCURRED]->(expense:Expense {fiscal_year: current_fiscal_year})
+          RETURN sum(expense.amount) AS mp_current_year_expenses
+        }
+
+        CALL {
+          WITH mp
+          OPTIONAL MATCH (mp)-[:SERVES_ON]->(committee:Committee)
+          OPTIONAL MATCH (mp)<-[:MADE_BY]-(s:Statement)-[:PART_OF]->(d:Document {document_type: 'E'})
+          WITH mp, count(DISTINCT committee) AS committee_memberships, count(DISTINCT s) AS committee_statements
+          // Weight: 1 point per membership + 0.1 points per statement
+          RETURN (committee_memberships + committee_statements * 0.1) AS mp_committee_activity
+        }
+
+        // Calculate averages across all party MPs
+        WITH party, total_votes,
+             avg(mp_bills_sponsored) AS avg_bills_sponsored,
+             avg(mp_bills_passed) AS avg_bills_passed,
+             avg(mp_current_year_expenses) AS avg_current_year_expenses,
+             avg(CASE WHEN total_votes > 0
+                  THEN (toFloat(mp_votes_participated) / toFloat(total_votes)) * 100.0
+                  ELSE 0.0 END) AS avg_voting_participation_rate,
+             avg(CASE WHEN mp_votes_participated > 0
+                  THEN (toFloat(aligned_votes) / toFloat(mp_votes_participated)) * 100.0
+                  ELSE 0.0 END) AS avg_party_discipline_score,
+             avg(CASE WHEN mp_bills_sponsored > 0
+                  THEN (toFloat(mp_bills_passed) / toFloat(mp_bills_sponsored)) * 100.0
+                  ELSE 0.0 END) AS avg_legislative_success_rate,
+             avg(mp_committee_activity) AS avg_committee_activity_index,
+             count(DISTINCT mp) AS mp_count
+
+        RETURN {
+          party_code: party.code,
+          party_name: party.name,
+          avg_voting_participation_rate: avg_voting_participation_rate,
+          avg_party_discipline_score: avg_party_discipline_score,
+          avg_legislative_success_rate: avg_legislative_success_rate,
+          avg_committee_activity_index: avg_committee_activity_index,
+          avg_bills_sponsored: avg_bills_sponsored,
+          avg_bills_passed: avg_bills_passed,
+          avg_current_year_expenses: avg_current_year_expenses,
+          mp_count: mp_count
+        } AS averages
+        """
+        columnName: "averages"
       )
   }
 `;
