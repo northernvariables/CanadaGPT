@@ -335,6 +335,10 @@ export const GET_MP_SCORECARD = gql`
       current_year_expenses
       lobbyist_meetings
       question_period_interjections
+      voting_participation_rate
+      party_discipline_score
+      legislative_success_rate
+      committee_activity_index
     }
   }
   ${MP_BASIC_FRAGMENT}

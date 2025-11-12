@@ -343,7 +343,7 @@ export default function MPDetailPage({ params }: { params: Promise<{ id: string 
 
                   return (
                     <div className="flex flex-wrap gap-3 text-sm">
-                      {offices.map((office, index) => (
+                      {offices.map((office: string, index: number) => (
                         <div key={index} className="flex items-start gap-2 flex-1 min-w-[250px]">
                           <MapPin className="h-4 w-4 mt-0.5 text-accent-red flex-shrink-0" />
                           <div className="text-text-secondary leading-relaxed space-y-0.5">
