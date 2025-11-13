@@ -163,11 +163,11 @@ export function BookmarkCard({ bookmark, onToggleFavorite, onDelete, onEditNote,
 
                 {noteExpanded ? (
                   <div className="text-xs text-text-secondary prose-sm">
-                    <MarkdownRenderer content={bookmark.notes} />
+                    <MarkdownRenderer content={bookmark.notes || ''} />
                   </div>
                 ) : (
                   <p className="text-xs text-text-tertiary italic line-clamp-2">
-                    {getMarkdownPreview(bookmark.notes, 120)}
+                    {getMarkdownPreview(bookmark.notes || '', 120)}
                   </p>
                 )}
               </div>
