@@ -812,7 +812,7 @@ export default function MPDetailPage({ params }: { params: Promise<{ id: string 
                                 <Link href={`/${locale}/mps/${question.madeBy.id}`}>
                                   <div className="relative w-16 h-16 flex-shrink-0 rounded overflow-hidden bg-bg-overlay">
                                     <img
-                                      src={getMPPhotoUrl(question.madeBy)}
+                                      src={getMPPhotoUrl(question.madeBy) || '/default-avatar.png'}
                                       alt={question.madeBy.name}
                                       className="w-full h-full object-cover"
                                       style={{ objectPosition: 'center -6px' }}
