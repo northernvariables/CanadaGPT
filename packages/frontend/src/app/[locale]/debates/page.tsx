@@ -251,9 +251,9 @@ export default function DebatesPage() {
             )}
           </>
         )}
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
       ) : (
         /* 3-MONTH VIEW: Stacked vertical layout */
         <>

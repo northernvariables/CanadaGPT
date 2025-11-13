@@ -17,6 +17,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { UserPreferencesProvider } from '@/contexts/UserPreferencesContext';
 import { BookmarksProvider } from '@/contexts/BookmarksContext';
 import { ChatWidgetWrapper } from '@/components/chat';
+import { BookmarksDrawerWrapper } from '@/components/bookmarks/BookmarksDrawerWrapper';
 import { ContentWrapper } from '@/components/ContentWrapper';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { GoogleTagManager, GoogleTagManagerNoScript } from '@/components/GoogleTagManager';
@@ -140,6 +141,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                         {children}
                       </ContentWrapper>
                       <ChatWidgetWrapper />
+                      <BookmarksDrawerWrapper />
                     </ApolloWrapper>
                   </BookmarksProvider>
                 </UserPreferencesProvider>
