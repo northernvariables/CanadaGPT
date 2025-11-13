@@ -143,24 +143,24 @@ export function DebateCard({ debate }: DebateCardProps) {
             {locale === 'fr' ? (debate.speaker_count === 1 ? 'député' : 'députés') : (debate.speaker_count === 1 ? 'MP' : 'MPs')}
           </span>
         </div>
-            <div className="ml-auto flex items-center gap-1 text-accent-red font-medium group-hover:gap-2 transition-all">
-              {locale === 'fr' ? 'Voir le débat' : 'View Debate'}
-              <ChevronRight className="h-4 w-4" />
-            </div>
-          </div>
+        <div className="ml-auto flex items-center gap-1 text-accent-red font-medium group-hover:gap-2 transition-all">
+          {locale === 'fr' ? 'Voir le débat' : 'View Debate'}
+          <ChevronRight className="h-4 w-4" />
         </div>
-
-        {/* RIGHT COLUMN: Word Cloud (desktop only) */}
-        {(debate.document.keywords_en || debate.document.keywords_fr) && (
-          <div className="hidden lg:flex items-center justify-center bg-bg-base/50 p-6 border-l border-border-subtle">
-            <DebateWordCloud
-              keywords_en={debate.document.keywords_en}
-              keywords_fr={debate.document.keywords_fr}
-              compact={true}
-            />
-          </div>
-        )}
       </div>
-    </Link>
+    </div>
+
+    {/* RIGHT COLUMN: Word Cloud (desktop only) */}
+    {(debate.document.keywords_en || debate.document.keywords_fr) && (
+      <div className="hidden lg:flex items-center justify-center bg-bg-base/50 p-6 border-l border-border-subtle">
+        <DebateWordCloud
+          keywords_en={debate.document.keywords_en}
+          keywords_fr={debate.document.keywords_fr}
+          compact={true}
+        />
+      </div>
+    )}
+  </div>
+</Link>
   );
 }

@@ -261,6 +261,10 @@ export const typeDefs = `#graphql
     xml_source_url: String
     updated_at: DateTime
 
+    # TF-IDF keyword extraction (JSON string arrays)
+    keywords_en: String  # JSON: [{"word": "keyword", "weight": 0.95}, ...]
+    keywords_fr: String  # JSON: [{"word": "mot-clé", "weight": 0.95}, ...]
+
     # Relationships
     statements: [Statement!]! @relationship(type: "PART_OF", direction: IN)
     presentedTo: Committee @relationship(type: "PRESENTED_TO", direction: OUT)
@@ -353,6 +357,8 @@ export const typeDefs = `#graphql
     session_id: String
     document_type: String
     number: Int
+    keywords_en: String
+    keywords_fr: String
   }
 
   type DebateCalendarDay {
@@ -1511,7 +1517,9 @@ export const typeDefs = `#graphql
             date: d.date,
             session_id: d.session_id,
             document_type: d.document_type,
-            number: d.number
+            number: d.number,
+            keywords_en: d.keywords_en,
+            keywords_fr: d.keywords_fr
           },
           statement_count: statement_count,
           speaker_count: speaker_count,
@@ -1614,7 +1622,9 @@ export const typeDefs = `#graphql
             date: d.date,
             session_id: d.session_id,
             document_type: d.document_type,
-            number: d.number
+            number: d.number,
+            keywords_en: d.keywords_en,
+            keywords_fr: d.keywords_fr
           },
           statement_count: statement_count,
           speaker_count: speaker_count,

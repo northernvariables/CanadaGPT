@@ -811,6 +811,8 @@ export const GET_RECENT_DEBATES = gql`
         session_id
         document_type
         number
+        keywords_en
+        keywords_fr
       }
       statement_count
       speaker_count
@@ -1184,6 +1186,8 @@ export const GET_QUESTION_PERIOD_DEBATES = gql`
         session_id
         document_type
         number
+        keywords_en
+        keywords_fr
       }
       statement_count
       speaker_count

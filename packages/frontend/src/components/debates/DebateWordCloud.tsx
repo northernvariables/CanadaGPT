@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import ReactWordcloud from 'react-wordcloud';
+import React, { useMemo, useState, useEffect } from 'react';
+import { TagCloud } from 'react-tagcloud';
 import { useLocale } from 'next-intl';
 
 interface Keyword {
@@ -23,41 +23,79 @@ export function DebateWordCloud({
   className = ''
 }: DebateWordCloudProps) {
   const locale = useLocale();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const keywordsJson = locale === 'fr' ? keywords_fr : keywords_en;
 
-  const words = useMemo(() => {
+  const tags = useMemo(() => {
     if (!keywordsJson) return [];
 
     try {
       const keywords: Keyword[] = JSON.parse(keywordsJson);
+      if (!Array.isArray(keywords) || keywords.length === 0) return [];
+
       return keywords.map(k => ({
-        text: k.word,
-        value: Math.round(k.weight * 100)
-      }));
+        value: k.word,
+        count: Math.round(k.weight * 100)
+      })).filter(t => t.value && t.count > 0);
     } catch (error) {
       console.error('Error parsing keywords:', error);
       return [];
     }
   }, [keywordsJson]);
 
-  if (words.length === 0) return null;
+  // Don't render until client-side mounted
+  if (!mounted || tags.length === 0) return null;
 
-  const options = {
-    rotations: 2,
-    rotationAngles: [-90, 0] as [number, number],
-    fontSizes: (compact ? [12, 36] : [16, 64]) as [number, number],
-    padding: 2,
-    deterministic: true,
-    enableTooltip: true,
-    colors: ['#DC2626', '#991B1B', '#7F1D1D', '#EF4444', '#F87171'],
-    fontFamily: 'Inter, system-ui, sans-serif',
-    scale: 'sqrt' as const,
-  };
+  const customRenderer = (tag: any, size: number) => (
+    <span
+      key={tag.value}
+      style={{
+        fontSize: `${size}px`,
+        margin: '2px 6px',
+        padding: '2px 4px',
+        display: 'inline-block',
+        color: '#DC2626',
+        cursor: 'default',
+        lineHeight: '1.1',
+      }}
+      title={`${tag.value} (${tag.count})`}
+    >
+      {tag.value}
+    </span>
+  );
 
   return (
     <div className={`w-full ${compact ? 'h-48' : 'h-64'} ${className}`}>
-      <ReactWordcloud words={words} options={options} />
+      <div style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1.5rem 1rem',
+        overflow: 'visible'
+      }}>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          gap: '0.25rem'
+        }}>
+          <TagCloud
+            tags={tags}
+            minSize={compact ? 12 : 16}
+            maxSize={compact ? 36 : 64}
+            renderer={customRenderer}
+          />
+        </div>
+      </div>
     </div>
   );
 }
