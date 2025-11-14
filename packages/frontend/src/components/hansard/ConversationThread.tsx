@@ -15,6 +15,8 @@ interface Statement {
   who_fr?: string;
   content_en?: string;
   content_fr?: string;
+  h1_en?: string;
+  h1_fr?: string;
   h2_en?: string;
   h2_fr?: string;
   statement_type?: string;

@@ -183,13 +183,14 @@ export function StatementCard({ statement, documentId, isReply = false }: Statem
   return (
     <article
       id={statement.id}
+      data-section={h1 || undefined}
       className={`
         relative
         ${isReply ? 'ml-8 mt-3' : 'mt-4'}
         ${colors.bg} ${colors.border} border-l-4 border
         rounded-lg p-4 shadow-sm
         transition-all hover:shadow-md
-        scroll-mt-20
+        scroll-mt-32
       `}
     >
       {/* Action Buttons - Top Right */}

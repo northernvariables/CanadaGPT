@@ -10,6 +10,8 @@ import { StatementCard } from '@/components/debates/StatementCard';
 import { SectionNavigator } from '@/components/debates/SectionNavigator';
 import { ThreadToggle } from '@/components/hansard/ThreadToggle';
 import { ConversationThread } from '@/components/hansard/ConversationThread';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { Calendar, Copy, Hash } from 'lucide-react';
 
 export default function DebateDetailPage() {
@@ -135,49 +137,53 @@ export default function DebateDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-base">
-      {/* Context Card */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <DebateContextCard
-          document={debateDetail.document}
-          statementCount={debateDetail.statement_count}
-          speakerCount={speakerCount}
-        />
-      </div>
+    <>
+      <Header />
+      <div className="min-h-screen bg-bg-base">
+        {/* Context Card */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <DebateContextCard
+            document={debateDetail.document}
+            statementCount={debateDetail.statement_count}
+            speakerCount={speakerCount}
+          />
+        </div>
 
-      {/* Section Navigator */}
-      {sections.length > 0 && (
-        <SectionNavigator sections={sections} locale={locale} />
-      )}
+        {/* Section Navigator */}
+        {sections.length > 0 && (
+          <SectionNavigator sections={sections} locale={locale} />
+        )}
 
-      {/* Thread Toggle */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <ThreadToggle enabled={showThreaded} onChange={setShowThreaded} />
-      </div>
+        {/* Thread Toggle */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <ThreadToggle enabled={showThreaded} onChange={setShowThreaded} />
+        </div>
 
-      {/* Statements */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="space-y-4">
-          {groupedStatements.map((thread: any, idx: number) => {
-            if (showThreaded && thread.replies.length > 0) {
-              return (
-                <ConversationThread
-                  key={thread.root.id || idx}
-                  statements={[thread.root, ...thread.replies]}
-                />
-              );
-            } else {
-              return (
-                <StatementCard
-                  key={thread.root.id || idx}
-                  statement={thread.root}
-                  documentId={documentId}
-                />
-              );
-            }
-          })}
+        {/* Statements */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="space-y-4">
+            {groupedStatements.map((thread: any, idx: number) => {
+              if (showThreaded && thread.replies.length > 0) {
+                return (
+                  <ConversationThread
+                    key={thread.root.id || idx}
+                    statements={[thread.root, ...thread.replies]}
+                  />
+                );
+              } else {
+                return (
+                  <StatementCard
+                    key={thread.root.id || idx}
+                    statement={thread.root}
+                    documentId={documentId}
+                  />
+                );
+              }
+            })}
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

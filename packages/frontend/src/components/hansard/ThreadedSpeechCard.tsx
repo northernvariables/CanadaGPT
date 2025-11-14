@@ -27,6 +27,8 @@ interface Statement {
   who_fr?: string;
   content_en?: string;
   content_fr?: string;
+  h1_en?: string;
+  h1_fr?: string;
   h2_en?: string;
   h2_fr?: string;
   h3_en?: string;
@@ -258,9 +260,13 @@ Use Hansard records, bills, votes, and other parliamentary data to support your 
     }
   };
 
+  // Get h1 value for section navigation
+  const h1 = locale === 'fr' && statement.h1_fr ? statement.h1_fr : statement.h1_en;
+
   return (
     <PrintableCard>
       <article
+      data-section={h1 || undefined}
       className={`
         relative
         ${isReply ? 'ml-8 mt-3' : ''}

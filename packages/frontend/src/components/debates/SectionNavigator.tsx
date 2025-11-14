@@ -19,7 +19,19 @@ export function SectionNavigator({ sections, locale }: SectionNavigatorProps) {
     const elements = document.querySelectorAll('[data-section]');
     for (const element of elements) {
       if (element.getAttribute('data-section') === sectionName) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Calculate the offset (header + section navigator height)
+        const headerHeight = 64; // h-16 = 64px
+        const navHeight = navRef.current?.offsetHeight || 56; // Approximate section nav height
+        const offset = headerHeight + navHeight + 8; // Extra 8px padding
+
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+
         setActiveSection(sectionName);
         setIsExpanded(false);
         break;
@@ -29,6 +41,10 @@ export function SectionNavigator({ sections, locale }: SectionNavigatorProps) {
 
   // Track which section is currently visible
   useEffect(() => {
+    const headerHeight = 64; // h-16 = 64px
+    const navHeight = navRef.current?.offsetHeight || 56;
+    const totalOffset = headerHeight + navHeight;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -40,7 +56,10 @@ export function SectionNavigator({ sections, locale }: SectionNavigatorProps) {
           }
         });
       },
-      { threshold: 0.5 }
+      {
+        threshold: 0.1,
+        rootMargin: `-${totalOffset}px 0px -50% 0px`
+      }
     );
 
     const elements = document.querySelectorAll('[data-section]');
@@ -58,7 +77,7 @@ export function SectionNavigator({ sections, locale }: SectionNavigatorProps) {
   return (
     <div
       ref={navRef}
-      className="sticky top-0 z-10 bg-bg-elevated border-b border-border-subtle shadow-sm"
+      className="sticky top-16 z-10 bg-bg-elevated border-b border-border-subtle shadow-sm"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile: Dropdown */}
