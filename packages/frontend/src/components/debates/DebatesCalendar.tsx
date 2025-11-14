@@ -57,7 +57,7 @@ export function DebatesCalendar({ onDateRangeSelect, selectedStartDate, selected
   const [focusedDate, setFocusedDate] = useState<Date | null>(null);
 
   // View mode: 1 or 3 months, persisted in localStorage
-  const [monthsToShow, setMonthsToShow] = useState<1 | 3>(3);
+  const [monthsToShow, setMonthsToShow] = useState<1 | 3>(1);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Drag selection state
@@ -321,21 +321,20 @@ export function DebatesCalendar({ onDateRangeSelect, selectedStartDate, selected
                 >
                   <div className="text-center text-xs">{format(day, 'd')}</div>
 
-                  {/* Debate indicator squares */}
+                  {/* Debate indicator squares - 2x2 grid */}
                   {hasDebates && isCurrentMonth && (
-                    <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 flex flex-col gap-0.5">
-                      {debate?.hasHouseDebates && (
-                        <div className="w-2 h-2 rounded-sm bg-blue-500" />
-                      )}
-                      {debate?.hasQuestionPeriod && (
-                        <div className="w-2 h-2 rounded-sm bg-red-500" />
-                      )}
-                      {debate?.hasCommittee && (
-                        <div className="w-2 h-2 rounded-sm bg-green-500" />
-                      )}
-                      {debate?.hasScheduledMeeting && (
-                        <div className="w-2 h-2 rounded-sm border-2 border-purple-500" />
-                      )}
+                    <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 grid grid-cols-2 gap-0.5 w-5 h-5">
+                      {/* Top Left - House (Green) */}
+                      <div className={`w-2 h-2 rounded-sm ${debate?.hasHouseDebates ? 'bg-green-500' : 'bg-transparent'}`} />
+
+                      {/* Top Right - QP (Blue) */}
+                      <div className={`w-2 h-2 rounded-sm ${debate?.hasQuestionPeriod ? 'bg-blue-500' : 'bg-transparent'}`} />
+
+                      {/* Bottom Left - Committee (Yellow) */}
+                      <div className={`w-2 h-2 rounded-sm ${debate?.hasCommittee ? 'bg-yellow-500' : 'bg-transparent'}`} />
+
+                      {/* Bottom Right - Scheduled (Purple) */}
+                      <div className={`w-2 h-2 rounded-sm ${debate?.hasScheduledMeeting ? 'bg-purple-500' : 'bg-transparent'}`} />
                     </div>
                   )}
                 </button>
@@ -466,22 +465,42 @@ export function DebatesCalendar({ onDateRangeSelect, selectedStartDate, selected
         )}
       </div>
 
-      {/* Legend */}
+      {/* Legend - 2x2 Grid Positions */}
       <div className="flex items-center gap-4 mb-3 text-xs text-text-secondary flex-wrap">
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm bg-blue-500" />
+          <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
+            <div className="w-1.5 h-1.5 rounded-sm bg-green-500" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+          </div>
           <span>{locale === 'fr' ? 'Chambre' : 'House'}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm bg-red-500" />
+          <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-blue-500" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+          </div>
           <span>{locale === 'fr' ? 'PQ' : 'QP'}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm bg-green-500" />
+          <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-yellow-500" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+          </div>
           <span>{locale === 'fr' ? 'Comité' : 'Committee'}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm border-2 border-purple-500" />
+          <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-transparent" />
+            <div className="w-1.5 h-1.5 rounded-sm bg-purple-500" />
+          </div>
           <span>{locale === 'fr' ? 'Prévue' : 'Scheduled'}</span>
         </div>
         <div className="text-text-tertiary italic ml-auto">
